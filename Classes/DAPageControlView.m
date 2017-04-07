@@ -11,7 +11,7 @@
 #import "DAPageIndicatorViewCell.h"
 
 
-static NSUInteger const FCMaximumIndicatorsCount = 21;
+static NSUInteger const FCMaximumIndicatorsCount = 7;
 static CGFloat const FCMaximumIndicatorViewWidth = 14.;
 
 
@@ -35,40 +35,28 @@ static CGFloat const FCMaximumIndicatorViewWidth = 14.;
 {
     self = [super initWithFrame:frame];
     if (self) {
-        [self setup];
+        /// Defaults
+        self.numberOfPagesAllowingPerspective = 3;
+        
+        UICollectionViewFlowLayout *collectionViewLayout = [[UICollectionViewFlowLayout alloc] init];
+        collectionViewLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+        collectionViewLayout.minimumInteritemSpacing = collectionViewLayout.minimumLineSpacing = 0.;
+        self.indicatorsView = [[UICollectionView alloc] initWithFrame:self.bounds collectionViewLayout:collectionViewLayout];
+        [self.indicatorsView registerClass:[DAPageIndicatorViewCell class] forCellWithReuseIdentifier:DAPageIndicatorViewCellIdentifier];
+        self.indicatorsView.backgroundColor = [UIColor clearColor];
+        self.indicatorsView.showsHorizontalScrollIndicator = NO;
+        self.indicatorsView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        self.indicatorsView.dataSource = self;
+        self.indicatorsView.delegate = self;
+        self.indicatorsView.scrollEnabled = NO;
+        self.indicatorsView.backgroundColor = [UIColor clearColor];
+        [self addSubview:self.indicatorsView];
+        
+        [self.indicatorsView addObserver:self forKeyPath:@"contentOffset" options:0 context:nil];
+        self.currentPage = 0;
     }
     
     return self;
-}
-
-- (void)awakeFromNib {
-    [self setup];
-}
-
-- (void)setup {
-    /// Defaults
-    self.numberOfPagesAllowingPerspective = 3;
-    
-    UICollectionViewFlowLayout *collectionViewLayout = [[UICollectionViewFlowLayout alloc] init];
-    collectionViewLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-    collectionViewLayout.minimumInteritemSpacing = collectionViewLayout.minimumLineSpacing = 0.;
-    self.indicatorsView = [[UICollectionView alloc] initWithFrame:self.bounds collectionViewLayout:collectionViewLayout];
-    [self.indicatorsView registerClass:[DAPageIndicatorViewCell class] forCellWithReuseIdentifier:DAPageIndicatorViewCellIdentifier];
-    self.indicatorsView.backgroundColor = [UIColor clearColor];
-    self.indicatorsView.showsHorizontalScrollIndicator = NO;
-    self.indicatorsView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    self.indicatorsView.dataSource = self;
-    self.indicatorsView.delegate = self;
-    self.indicatorsView.scrollEnabled = NO;
-    self.indicatorsView.backgroundColor = [UIColor clearColor];
-    [self addSubview:self.indicatorsView];
-    
-    [self.indicatorsView addObserver:self forKeyPath:@"contentOffset" options:0 context:nil];
-    self.currentPage = 0;
-    
-    // default color
-    self.normalColor = [UIColor lightGrayColor];
-    self.selectedColor = [UIColor whiteColor];
 }
 
 - (void)dealloc
@@ -77,19 +65,6 @@ static CGFloat const FCMaximumIndicatorViewWidth = 14.;
 }
 
 #pragma mark - Public
-
-- (void)gotoPage:(NSUInteger)page
-{
-    CGFloat currentIndex = page;
-    if ( page == self.currentPage )
-        return;
-    
-    self.currentPage = page;
-    
-    CGFloat x = self.indicatorsView.contentSize.width * (currentIndex - floorf(0.5 * CGRectGetWidth(self.indicatorsView.frame) / [self indicatorViewWidth])) / self.numberOfPages;
-    x = MIN((self.indicatorsView.contentSize.width - CGRectGetWidth(self.indicatorsView.frame)), MAX(0, x));
-    self.indicatorsView.contentOffset = CGPointMake(x, 0.);
-}
 
 - (void)updateForScrollViewContentOffset:(CGFloat)contentOffset pageSize:(CGFloat)pageSize
 {
@@ -151,13 +126,13 @@ static CGFloat const FCMaximumIndicatorViewWidth = 14.;
     if (index * [self indicatorViewWidth] < offset + self.numberOfPagesAllowingPerspective * [self indicatorViewWidth]) {
         if (offset > 0) {
             CGFloat delta = index * [self indicatorViewWidth] - (offset + self.numberOfPagesAllowingPerspective * [self indicatorViewWidth]);
-            scale = 1 - 0.6 * (fabsf(delta)) / (self.numberOfPagesAllowingPerspective * [self indicatorViewWidth]);
+            scale = 1 - 0.6 * (fabs(delta)) / (self.numberOfPagesAllowingPerspective * [self indicatorViewWidth]);
         }
     } else {
         if ((index + 1) * [self indicatorViewWidth] > offset + CGRectGetWidth(self.indicatorsView.frame) - (self.numberOfPagesAllowingPerspective * [self indicatorViewWidth])) {
             if (offset + CGRectGetWidth(self.indicatorsView.frame) < self.indicatorsView.contentSize.width) {
                 CGFloat delta = (offset + CGRectGetWidth(self.indicatorsView.frame) - (self.numberOfPagesAllowingPerspective * [self indicatorViewWidth])) - (index + 1) * [self indicatorViewWidth];
-                scale = 1 - 0.6 * (fabsf(delta)) / (self.numberOfPagesAllowingPerspective * [self indicatorViewWidth]);
+                scale = 1 - 0.6 * (fabs(delta)) / (self.numberOfPagesAllowingPerspective * [self indicatorViewWidth]);
             }
         }
     }
@@ -257,8 +232,6 @@ static CGFloat const FCMaximumIndicatorViewWidth = 14.;
     DAPageIndicatorViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:DAPageIndicatorViewCellIdentifier forIndexPath:indexPath];
     cell.tag = indexPath.row;
     cell.pageIndicatorView.selected = (indexPath.row == self.currentPage);
-    cell.normalColor = self.normalColor;
-    cell.selectedColor = self.selectedColor;
     CGFloat scale = [self scaleForIndicatorAtIndex:indexPath.row];
     cell.pageIndicatorView.transform = CGAffineTransformMakeScale(scale, scale);
     if (indexPath.row == self.numberOfPages - 1) {
