@@ -32,17 +32,16 @@ CGFloat const DAPageIndicatorViewHeight = DAPageIndicatorViewWidth;
 {
     self = [super initWithFrame:frame];
     if (self) {
+        NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+        UIImage *indicatorImage = [UIImage imageNamed:@"PageIndicator" inBundle:bundle compatibleWithTraitCollection:nil];
+        UIImage *currentImage = [UIImage imageNamed:@"ActivePageIndicator" inBundle:bundle compatibleWithTraitCollection:nil];
         self.pageIndicatorView = [[UIButton alloc] initWithFrame:CGRectMake(0., 0., DAPageIndicatorViewWidth, DAPageIndicatorViewHeight)];
+        self.pageIndicatorView.layer.masksToBounds = YES;
+        self.pageIndicatorView.layer.cornerRadius = self.pageIndicatorView.frame.size.width / 2;
         
-        // default
-        UIImage* normalImage = [self imageByDrawingCircleWithColor:[UIColor lightGrayColor] withSize:self.pageIndicatorView.bounds.size];
-        UIImage* selectImage = [self imageByDrawingCircleWithColor:[UIColor whiteColor] withSize:self.pageIndicatorView.bounds.size];
-        [self.pageIndicatorView setBackgroundImage:normalImage forState:UIControlStateNormal];
-        [self.pageIndicatorView setBackgroundImage:selectImage forState:UIControlStateSelected];
+        [self.pageIndicatorView setBackgroundImage:indicatorImage forState:UIControlStateNormal];
+        [self.pageIndicatorView setBackgroundImage:currentImage forState:UIControlStateSelected];
         
-//        [self.pageIndicatorView setBackgroundImage:[UIImage imageNamed:@"DAPageIndicator"] forState:UIControlStateNormal];
-//        [self.pageIndicatorView setBackgroundImage:[UIImage imageNamed:@"DAPageIndicatorCurrent"] forState:UIControlStateSelected];
-
         self.pageIndicatorView.center = CGPointMake(0.5 * CGRectGetWidth(frame), 0.5 * CGRectGetHeight(frame));
         self.pageIndicatorView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
         self.pageIndicatorView.userInteractionEnabled = NO;

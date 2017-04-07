@@ -11,7 +11,7 @@
 #import "DAPageIndicatorViewCell.h"
 
 
-static NSUInteger const FCMaximumIndicatorsCount = 21;
+static NSUInteger const FCMaximumIndicatorsCount = 7;
 static CGFloat const FCMaximumIndicatorViewWidth = 14.;
 
 
@@ -151,13 +151,13 @@ static CGFloat const FCMaximumIndicatorViewWidth = 14.;
     if (index * [self indicatorViewWidth] < offset + self.numberOfPagesAllowingPerspective * [self indicatorViewWidth]) {
         if (offset > 0) {
             CGFloat delta = index * [self indicatorViewWidth] - (offset + self.numberOfPagesAllowingPerspective * [self indicatorViewWidth]);
-            scale = 1 - 0.6 * (fabsf(delta)) / (self.numberOfPagesAllowingPerspective * [self indicatorViewWidth]);
+            scale = 1 - 0.6 * (fabs(delta)) / (self.numberOfPagesAllowingPerspective * [self indicatorViewWidth]);
         }
     } else {
         if ((index + 1) * [self indicatorViewWidth] > offset + CGRectGetWidth(self.indicatorsView.frame) - (self.numberOfPagesAllowingPerspective * [self indicatorViewWidth])) {
             if (offset + CGRectGetWidth(self.indicatorsView.frame) < self.indicatorsView.contentSize.width) {
                 CGFloat delta = (offset + CGRectGetWidth(self.indicatorsView.frame) - (self.numberOfPagesAllowingPerspective * [self indicatorViewWidth])) - (index + 1) * [self indicatorViewWidth];
-                scale = 1 - 0.6 * (fabsf(delta)) / (self.numberOfPagesAllowingPerspective * [self indicatorViewWidth]);
+                scale = 1 - 0.6 * (fabs(delta)) / (self.numberOfPagesAllowingPerspective * [self indicatorViewWidth]);
             }
         }
     }
