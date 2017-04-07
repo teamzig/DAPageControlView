@@ -34,6 +34,5 @@
 @property (weak, nonatomic) id<DAPageControlViewDelegate> delegate;
 
 - (void)updateForScrollViewContentOffset:(CGFloat)contentOffset pageSize:(CGFloat)pageSize;
-- (void)gotoPage:(NSUInteger)page;
 
 @end
