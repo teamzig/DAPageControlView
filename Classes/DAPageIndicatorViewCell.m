@@ -50,6 +50,13 @@ CGFloat const DAPageIndicatorViewHeight = DAPageIndicatorViewWidth;
     return self;
 }
 
+- (void)setNormalColor:(UIColor *)normal andSelectedColor:(UIColor *)selected  {
+    UIImage *normalImage = [self imageByDrawingCircleWithColor: normal withSize: self.frame.size];
+    UIImage *selectedImage = [self imageByDrawingCircleWithColor: selected withSize: self.frame.size];
+    [self.pageIndicatorView setBackgroundImage:normalImage forState:UIControlStateNormal];
+    [self.pageIndicatorView setBackgroundImage:selectedImage forState:UIControlStateSelected];
+}
+
 - (void)prepareForReuse
 {
     [super prepareForReuse];

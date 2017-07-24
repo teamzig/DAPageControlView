@@ -19,5 +19,6 @@ extern NSString *const DAPageIndicatorViewCellIdentifier;
 @property (strong, nonatomic) UIColor* selectedColor;
 
 + (instancetype)defaultCell;
-
+- (void)setNormalColor:(UIColor *)normal andSelectedColor:(UIColor *)selected;
+    
 @end

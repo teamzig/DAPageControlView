@@ -230,6 +230,7 @@ static CGFloat const FCMaximumIndicatorViewWidth = 14.;
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     DAPageIndicatorViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:DAPageIndicatorViewCellIdentifier forIndexPath:indexPath];
+    [cell setNormalColor:self.normalColor andSelectedColor:self.selectedColor];
     cell.tag = indexPath.row;
     cell.pageIndicatorView.selected = (indexPath.row == self.currentPage);
     CGFloat scale = [self scaleForIndicatorAtIndex:indexPath.row];
